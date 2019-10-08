@@ -17,7 +17,10 @@ void loop();
 
 // GLOBAL VARS
 int engineSpeed = 1000;
-
+int steps = 0;
+int stepGoal = 0;
+int steeringInitialised = FALSE;
+int readyToUse = FALSE;
 
 int main(void) {
     setup();
@@ -40,24 +43,49 @@ void setup() {
     SerialBegin(9600);
 
     // the engines need a voltage kick to get going
-    analogueOutput(9,1000);
+    // UNFORTUNATELY THIS PWM *STILL* DOESN'T PLAY NICE WITH THE STEPPER MOTOR. looks like I'm gonna have to do the stepper motor in pwm too.
+    //analogueOutput(9,1000);
 }
 
 // runs indefinitely
 void loop() {
     //digitalOutput(4,digitalInput(2));
     int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
-    
     // MAX SPEED - 2 milliseconds (takes about 4 seconds for a full revolution)
-    //stepperMotorControl(2,1);
+    int button = digitalInput(2);
+    if(steeringInitialised == FALSE){
+        steeringInitialised = !button;
+        stepperMotorControl(10,1);
+    } else {
+        if(!readyToUse) {
+            stepGoal = 64; // MOVE BACK TO CENTRE
+
+        }
+        if(steps != stepGoal) {
+            if(!readyToUse) {
+                stepperMotorControl(5,0);
+            } else {
+                // other steering code (not completed goal)
+            }
+            steps++;
+        } else {
+            if(!readyToUse) {
+                readyToUse = TRUE;
+            } else {
+                // other steering code (completed goal)
+            }
+        }
+        
+    }
+    
     //motorDirection(1);
-    motorDirection(1);
+    //motorDirection(1);
     //digitalOutput(6,1);
     /*digitalOutput(4,ON);
     delay_ms(1000);
     digitalOutput(4,OFF);
     delay_ms(1000);*/
-    int button = digitalInput(2); // DIGITAL INPUT SEEMS TO BE GOOD ENOUGH WITHOUT THE DEBOUNCER
+    /*int button = digitalInput(2); // DIGITAL INPUT SEEMS TO BE GOOD ENOUGH WITHOUT THE DEBOUNCER
     if(button) {
         digitalOutput(13,OFF);
         engineSpeed = 1000;
@@ -65,7 +93,7 @@ void loop() {
     } else {
         digitalOutput(13,ON);
         engineSpeed = 0;
-    }
+    }*/
     
     /*if(debouncedInput(2)) {
         engineSpeed = 900;

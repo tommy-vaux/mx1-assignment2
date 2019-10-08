@@ -15,13 +15,21 @@ void bitBangPWM(int pin, int input) {
 void stepperMotorControl(int delay, int direction) {
 
     if(direction) {
-        PORTB = 0b00000001;
+        PORTB = 0b00000011;
         delay_ms(delay);
         PORTB = 0b00000010;
         delay_ms(delay);
+        PORTB = 0b00000110;
+        delay_ms(delay);
         PORTB = 0b00000100;
         delay_ms(delay);
+        PORTB = 0b00001100;
+        delay_ms(delay);
         PORTB = 0b00001000;
+        delay_ms(delay);
+        PORTB = 0b00001001;
+        delay_ms(delay);
+        PORTB = 0b00000001;
         delay_ms(delay);
     } else {
         PORTB = 0b00001000;
