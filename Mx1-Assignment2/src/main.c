@@ -35,6 +35,7 @@ void setup() {
     setupPin(5,OUTPUT);
     setupPin(6,OUTPUT);
     setupPin(2,INPUT);
+    setupPin(13,OUTPUT);
 
     SerialBegin(9600);
 
@@ -56,7 +57,22 @@ void loop() {
     delay_ms(1000);
     digitalOutput(4,OFF);
     delay_ms(1000);*/
-    engineSpeed = 900;
+    int button = digitalInput(2); // DIGITAL INPUT SEEMS TO BE GOOD ENOUGH WITHOUT THE DEBOUNCER
+    if(button) {
+        digitalOutput(13,OFF);
+        engineSpeed = 1000;
+
+    } else {
+        digitalOutput(13,ON);
+        engineSpeed = 0;
+    }
+    
+    /*if(debouncedInput(2)) {
+        engineSpeed = 900;
+    } else {
+        engineSpeed = 0;
+    }*/
+    
     
     /*char test[128];
     snprintf(test,sizeof(test),"The Counter Value is %lu \n",getTimerValue(0));

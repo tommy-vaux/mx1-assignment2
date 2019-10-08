@@ -10,8 +10,13 @@ int getOutputPin(int pinNo);
 int getInputPin(int pinNo);
 void setupDelay();
 
-unsigned long usTimer = 0;
 unsigned long msTimer = 0;
+
+// Digital button input debouncing system (based on the Arduino example)
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+int lastButtonState = OFF;
+int buttonState;
 
 int lol = 0;
 
@@ -19,7 +24,7 @@ int lol = 0;
 
 // INTERRUPTS
 ISR(TIMER0_COMPA_vect) {
-    usTimer++;
+    msTimer++;
     TCNT0 = 0;
 } // this counts every ms
 
@@ -68,9 +73,7 @@ void setupTimers() {
 }
 
 unsigned long getTimerValue(int timer) {
-    if(timer == 0) {
-        return usTimer;
-    } else if(timer == 1) {
+    if(timer == 1) {
         return msTimer;
     }
     
@@ -120,23 +123,35 @@ void digitalOutput(int pinNo, int value) {
     }
 }
 
-// THESE DON'T WORK YET
+int debouncedInput(int pinNo) { // doesn't work; have found the digitalInput is good enough anyway.
+    int reading = digitalInput(pinNo);
+    int output = FALSE;
+    if(reading != lastButtonState) {
+        lastDebounceTime = msTimer;
+    }
+    if((msTimer - lastDebounceTime) > debounceDelay){
+        if(reading != buttonState) {
+            buttonState = reading;
+            if(buttonState == ON) {
+                output = TRUE;
+            }
+        }
+    }
+    lastButtonState = reading;
+    return output;
+}
 
 int digitalInput(int pinNo) {
     int output = FALSE;
     int pinID = getInputPin(pinNo);
     if(pinNo < 8) {
         if(PIND & (1<<pinID)) {
-            while(PIND & (1<<pinID)) {
-                output = TRUE;
-            }
+            output = TRUE;
         }
         
     } else if (pinNo < 14) {
         if(PINB & (1<<pinID)) {
-           while(PIND & (1<<pinID)) {
-                output = TRUE;
-            }
+            output = TRUE;
         }
     }
     return output;
