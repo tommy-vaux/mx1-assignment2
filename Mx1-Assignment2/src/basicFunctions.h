@@ -9,6 +9,12 @@
 #define OUTPUT 1
 #define INPUT 0
 
+
 // BASIC FUNCTIONS
+//setup
 void setupPin(int pinNo, int direction);
+void setupTimers();
+//use
 void digitalOutput(int pinNo, int value);
+int digitalInput(int pinNo);
+unsigned long long getTimerValue();

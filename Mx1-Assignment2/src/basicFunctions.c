@@ -1,12 +1,34 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "basicFunctions.h"
+#include "bluetooth.h"
 
 // PRIVATE FUNCTION DEFINITIONS
 int getDirectionPin(int pinNo);
 int getOutputPin(int pinNo);
 int getInputPin(int pinNo);
 
+unsigned long usTimer = 0;
+int msTimer = 0;
+
+// NOTE - TIMER USES TIMER0, PWM uses TIMER1
+
+// INTERRUPTS
+ISR(TIMER0_COMPA_vect) {
+    usTimer++;
+}
+
+
 //PUBLIC FUNCTIONS
+
+void setupTimers() {
+    sei();
+    setupDelay();
+}
+
+unsigned long long getTimerValue() {
+    return usTimer;
+}
 
 void setupPin(int pinNo, int direction) {
     int pinID = getDirectionPin(pinNo);
@@ -52,8 +74,64 @@ void digitalOutput(int pinNo, int value) {
     }
 }
 
+int digitalInput(int pinNo) {
+    int output = FALSE;
+    int pinID = getInputPin(pinNo);
+    if(pinNo < 8) {
+        if(PIND & (1<<pinID)) {
+            while(PIND & (1<<pinID)) {
+                output = TRUE;
+            }
+        }
+        
+    } else if (pinNo < 14) {
+        if(PINB & (1<<pinID)) {
+           while(PIND & (1<<pinID)) {
+                output = TRUE;
+            }
+        }
+    }
+    return output;
+}
+
+int digitalInputInversed(int pinNo) {
+    int output = FALSE;
+    int pinID = getInputPin(pinNo);
+    if(pinNo < 8) {
+        if(PIND & (1<<pinID)) {
+            output = FALSE;
+        } else {
+            while(!(PIND & (1<<pinID))) {
+                output = TRUE;
+            }
+        }
+        
+    } else if (pinNo < 14) {
+        if(PINB & (1<<pinID)) {
+            output = FALSE;
+        } else {
+            while(!(PINB & (1<<pinID))) {
+                output = TRUE;
+            }
+        }
+    }
+    return output;
+}
 
 // PRIVATE FUNCTIONS (NOT ACCESSIBLE FROM EXTERNAL FUNCTIONS). Incorrect input returns 0
+void setupDelay(){ // sets up timer0 for delay
+    TCCR0A = 0b00000000; // everything turned off
+
+    
+    OCR0A = 16; // the value to compare the timer to (no prescaling, we want microseconds)
+
+    TIMSK0 = 0b00000010; // interrupt enabled for compare A
+
+    TCCR0B = 0b00000001; // START TIMER; NO PRESCALING
+
+}
+
+
 int getDirectionPin(int pinNo) {
     if(pinNo == 0) {
         return DDD0;
