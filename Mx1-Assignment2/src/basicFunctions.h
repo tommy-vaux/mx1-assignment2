@@ -17,6 +17,8 @@ void setupTimers();
 //use
 void digitalOutput(int pinNo, int value);
 int digitalInput(int pinNo);
+void analogueOutput(int pinNo, int value);
+
 unsigned long getTimerValue(int timer);
 
 void delay_ms(int time);

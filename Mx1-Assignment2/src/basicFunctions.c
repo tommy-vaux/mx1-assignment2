@@ -120,6 +120,8 @@ void digitalOutput(int pinNo, int value) {
     }
 }
 
+// THESE DON'T WORK YET
+
 int digitalInput(int pinNo) {
     int output = FALSE;
     int pinID = getInputPin(pinNo);
@@ -164,6 +166,19 @@ int digitalInputInversed(int pinNo) {
     return output;
 }
 
+// based off code from https://www.electroschematics.com/avr-pwm/
+void analogueOutput(int pinNo, int value) {
+    // Setup output pin
+    setupPin(pinNo, OUTPUT);
+    // set duty cycle. As this is timer 1 and we will be using 10 bit, max range is 1024
+    OCR1A = value;
+    //set to non-inverting mode, 10 bit phase corrected PWM mode
+    TCCR1A = 0b10000011;
+    //set prescaler to 8 and start PWM
+    TCCR1B = 0b00000010;
+
+}
+
 // PRIVATE FUNCTIONS (NOT ACCESSIBLE FROM EXTERNAL FUNCTIONS). Incorrect input returns 0
 // Timer 0 - us delay seems to have issues.
 void setupDelay(){ // sets up timer0 for delay
@@ -179,7 +194,7 @@ void setupDelay(){ // sets up timer0 for delay
 
 }
 
-
+#pragma region basicHidden
 int getDirectionPin(int pinNo) {
     if(pinNo == 0) {
         return DDD0;
@@ -282,3 +297,4 @@ int getInputPin(int pinNo) {
         return 0;
     }
 }
+#pragma endregion
