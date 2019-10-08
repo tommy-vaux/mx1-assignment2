@@ -51,33 +51,8 @@ void setup() {
 void loop() {
     //digitalOutput(4,digitalInput(2));
     int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
-    // MAX SPEED - 2 milliseconds (takes about 4 seconds for a full revolution)
-    int button = digitalInput(2);
-    if(steeringInitialised == FALSE){
-        steeringInitialised = !button;
-        stepperMotorControl(10,1);
-    } else {
-        if(!readyToUse) {
-            stepGoal = 64; // MOVE BACK TO CENTRE
-
-        }
-        if(steps != stepGoal) {
-            if(!readyToUse) {
-                stepperMotorControl(5,0);
-            } else {
-                // other steering code (not completed goal)
-            }
-            steps++;
-        } else {
-            if(!readyToUse) {
-                readyToUse = TRUE;
-            } else {
-                // other steering code (completed goal)
-            }
-        }
-        
-    }
     
+    setupSteering();
     //motorDirection(1);
     //motorDirection(1);
     //digitalOutput(6,1);
@@ -110,6 +85,36 @@ void loop() {
     if(engineSpeed != currentEngineSpeed){
         analogueOutput(9, engineSpeed);
         currentEngineSpeed = engineSpeed;
+    }
+}
+
+// uses alot of global vars so I've kept it in the main function for now. Still doesn't play well with DC motors at the same time BTW.
+void setupSteering() {
+    // MAX SPEED - 2 milliseconds (takes about 4 seconds for a full revolution)
+    int button = digitalInput(2);
+    if(steeringInitialised == FALSE){
+        steeringInitialised = !button;
+        stepperMotorControl(10,1);
+    } else {
+        if(!readyToUse) {
+            stepGoal = 64; // MOVE BACK TO CENTRE
+
+        }
+        if(steps != stepGoal) {
+            if(!readyToUse) {
+                stepperMotorControl(5,0);
+            } else {
+                // other steering code (not completed goal)
+            }
+            steps++;
+        } else {
+            if(!readyToUse) {
+                readyToUse = TRUE;
+            } else {
+                // other steering code (completed goal)
+            }
+        }
+        
     }
 }
 
