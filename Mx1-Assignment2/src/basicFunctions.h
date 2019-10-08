@@ -17,4 +17,7 @@ void setupTimers();
 //use
 void digitalOutput(int pinNo, int value);
 int digitalInput(int pinNo);
-unsigned long long getTimerValue();
+unsigned long getTimerValue(int timer);
+
+void delay_ms(int time);
+void delay_us(int time);

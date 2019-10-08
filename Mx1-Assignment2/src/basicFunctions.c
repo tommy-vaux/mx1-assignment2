@@ -2,21 +2,62 @@
 #include <avr/interrupt.h>
 #include "basicFunctions.h"
 #include "bluetooth.h"
+#include <avr/delay.h>
 
 // PRIVATE FUNCTION DEFINITIONS
 int getDirectionPin(int pinNo);
 int getOutputPin(int pinNo);
 int getInputPin(int pinNo);
+void setupDelay();
 
 unsigned long usTimer = 0;
-int msTimer = 0;
+unsigned long msTimer = 0;
+
+int lol = 0;
 
 // NOTE - TIMER USES TIMER0, PWM uses TIMER1
 
 // INTERRUPTS
 ISR(TIMER0_COMPA_vect) {
     usTimer++;
+    TCNT0 = 0;
+} // this counts every ms
+
+
+
+// *TEMP* SOLUTION AS I JUST CANT GET MY OWN TIMERS WORKING THIS WAY FOR SOME REASON
+void delay_ms(int time) {
+    for(int i = 0; i < time; i++) {
+        _delay_ms(1);
+    }
 }
+
+void delay_us(int time) {
+    for(int i = 0; i < time; i++) {
+        _delay_us(1);
+    }
+}
+
+// max input is about 32000 -> 
+/*void delay_us(unsigned int time) {
+    unsigned long currentTimer = usTimer;
+    while((usTimer - currentTimer) < time) {
+        digitalOutput(5,ON);
+    }
+}
+// new idea: implement without while (means you need to use output)
+void delay_ms(unsigned int time) {
+    
+    unsigned long currentTimer = msTimer;
+    unsigned long timer = msTimer - currentTimer;
+    while((timer) < time){
+        timer = usTimer - currentTimer;
+        char test[128];
+        snprintf(test,sizeof(test),"The Counter Value is %lu \n",timer);
+        SerialSend(test);
+    }
+        
+}*/
 
 
 //PUBLIC FUNCTIONS
@@ -26,8 +67,13 @@ void setupTimers() {
     setupDelay();
 }
 
-unsigned long long getTimerValue() {
-    return usTimer;
+unsigned long getTimerValue(int timer) {
+    if(timer == 0) {
+        return usTimer;
+    } else if(timer == 1) {
+        return msTimer;
+    }
+    
 }
 
 void setupPin(int pinNo, int direction) {
@@ -119,15 +165,17 @@ int digitalInputInversed(int pinNo) {
 }
 
 // PRIVATE FUNCTIONS (NOT ACCESSIBLE FROM EXTERNAL FUNCTIONS). Incorrect input returns 0
+// Timer 0 - us delay seems to have issues.
 void setupDelay(){ // sets up timer0 for delay
     TCCR0A = 0b00000000; // everything turned off
 
+    TCNT0 = 0;
     
-    OCR0A = 16; // the value to compare the timer to (no prescaling, we want microseconds)
+    OCR0A = 250; // the value to compare the timer to (prescaling for milliseconds), 64*250 = 16000
 
     TIMSK0 = 0b00000010; // interrupt enabled for compare A
 
-    TCCR0B = 0b00000001; // START TIMER; NO PRESCALING
+    TCCR0B = 0b00000011; // START TIMER; 64 prescaler
 
 }
 

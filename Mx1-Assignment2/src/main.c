@@ -1,9 +1,9 @@
-//#include <avr/io.h>
-//#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 #include "basicFunctions.h"
 #include "bluetooth.h"
 #include <string.h>
-#include <avr/delay.h>
+//#include <avr/delay.h>
 #include <stdint.h>
 
 // constants are defined in basicFunctions.h. Add specific constants here if necessary
@@ -39,8 +39,22 @@ void setup() {
 // runs indefinitely
 void loop() {
     //digitalOutput(4,digitalInput(2));
-    char test[128];
-    snprintf(test,sizeof(test),"The Counter Value is %lu \n",getTimerValue());
-    SerialSend(test);
+
+    digitalOutput(4,ON);
+    delay_ms(1000);
+    digitalOutput(4,OFF);
+    delay_ms(1000);
+
+    /*char test[128];
+    snprintf(test,sizeof(test),"The Counter Value is %lu \n",getTimerValue(0));
+    SerialSend(test);*/
+    
+    
+    /*if(delay_ms(100)) {
+        digitalOutput(4, ON);
+    }
+    if(delay_ms(200)) {
+        digitalOutput(4, OFF);
+    }*/
 }
 
