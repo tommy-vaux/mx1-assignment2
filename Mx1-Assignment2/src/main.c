@@ -52,7 +52,20 @@ void loop() {
     //digitalOutput(4,digitalInput(2));
     int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
     
-    setupSteering();
+
+    // ADAPTED FROM https://create.arduino.cc/projecthub/mayooghgirish/arduino-bluetooth-basic-tutorial-d8b737
+    //SerialSend("bluetooth works");
+    if(available()) {
+        char input = receiveData();
+        transmitData(input);
+        if(input == '1') {
+            digitalOutput(12,ON);
+        } else if (input == '0') {
+            digitalOutput(12,OFF);
+        }
+    }
+    
+    //setupSteering();
     //motorDirection(1);
     //motorDirection(1);
     //digitalOutput(6,1);

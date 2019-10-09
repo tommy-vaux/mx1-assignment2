@@ -4,6 +4,7 @@
 // this is pretty much entirely based on the code examples in the datasheet.
 
 //#define UBRR CLOCKSPEED/16/BAUD-1 // UBRR is the value that actually sets the baud rate
+#define SERIAL_BUFFER_SIZE 64 // 64 bytes
 
 void SerialBegin(int baud) {
     // calc baud rate
@@ -23,7 +24,6 @@ void SerialSend(unsigned char data[MAX_STRING_LENGTH]) { // send from arduino
         transmitData(data[i]);
     }
 }
-// private
 void transmitData(unsigned char data) {
     // wait until next empty transmit buffer
     while ( !( UCSR0A & (1<<UDRE0)))
@@ -39,4 +39,8 @@ unsigned char receiveData() {
     ;
     // return data recieved from buffer (from transmission)
     return UDR0;
+}
+//from https://www.avrfreaks.net/forum/how-serialavailable-implemented-arduino
+int available () { // check if the serial is currently usable
+    return RXC0;
 }
