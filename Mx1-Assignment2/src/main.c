@@ -54,7 +54,7 @@ void loop() {
     int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
     
     // IF HAVE TIME; FIX THIS. but it's not necessary as led flash on actual bluetooth module indicates state.
-    int bluetoothState = digitalRead(7);
+    /*int bluetoothState = digitalRead(7);
     if(bluetoothState == 0) {
         // CONNECTED
         digitalOutput(6,OFF);
@@ -63,7 +63,7 @@ void loop() {
         // WAITING FOR PAIR
         digitalOutput(6,ON);
         digitalOutput(12,OFF);
-    }
+    }*/
     // ADAPTED FROM https://create.arduino.cc/projecthub/mayooghgirish/arduino-bluetooth-basic-tutorial-d8b737
     //SerialSend("bluetooth works");
     if(available()) {
