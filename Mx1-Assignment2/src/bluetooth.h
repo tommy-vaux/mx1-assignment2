@@ -11,3 +11,5 @@ void SerialSend(unsigned char data[MAX_STRING_LENGTH]);
 
 // recieve a char from serial
 unsigned char receiveData();
+void transmitData(unsigned char data);
+int available ();
