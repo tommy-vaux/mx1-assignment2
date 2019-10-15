@@ -15,6 +15,8 @@
 void setup();
 void loop();
 
+char numbers[] = {'0','1','2','3','4','5','6','7','8','9'};
+
 // GLOBAL VARS
 int engineSpeed = 1000;
 int steps = 0;
@@ -45,7 +47,7 @@ void setup() {
 
     // the engines need a voltage kick to get going
     // UNFORTUNATELY THIS PWM *STILL* DOESN'T PLAY NICE WITH THE STEPPER MOTOR. looks like I'm gonna have to do the stepper motor in pwm too.
-    //analogueOutput(9,1000);
+    analogueOutput(5,1000);
 }
 
 // runs indefinitely
@@ -67,16 +69,29 @@ void loop() {
     // ADAPTED FROM https://create.arduino.cc/projecthub/mayooghgirish/arduino-bluetooth-basic-tutorial-d8b737
     //SerialSend("bluetooth works");
     if(available()) {
+        char test[] = "test";
         char input = receiveData();
         transmitData(input);
-        if(input == '1') {
+        if(input == 'l') {
             //digitalOutput(12,ON);
             stepperMotorControl(5,1);
-        } else if (input == '0') {
+            SerialSend("Turning Left");
+            //snprintf(test,sizeof(test),"Test %d",tt);
+        } else if (input == 'r') {
             //digitalOutput(12,OFF);
-            digitalOutput(13,OFF);
-        } else if(input == '2') {
-            digitalOutput(13,ON);
+            stepperMotorControl(5,0);
+            SerialSend("Turning Right");
+        } else if(input == 'f') {
+            motorDirection(1);
+            SerialSend("Moving Forwards");
+        } else if(input == 'b') {
+           motorDirection(0);
+           SerialSend("Moving Backwards");
+        } else if(input > 47 && input <= 79) {
+            // between '0' and 'O', 32 different bits for different speeds
+            char output[12];
+            currentEngineSpeed = (input - 47) * 31;
+            //sprintf(output, sizeof(output), "Motor Speed %d", currentEngineSpeed);
         }
     }
 
@@ -113,7 +128,7 @@ void loop() {
 
     // THIS MUST RUN AT THE END OF ALL CODE
     if(engineSpeed != currentEngineSpeed){
-        analogueOutput(9, engineSpeed);
+        analogueOutput(5, engineSpeed);
         currentEngineSpeed = engineSpeed;
     }
 }
