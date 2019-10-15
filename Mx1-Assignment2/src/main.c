@@ -63,31 +63,34 @@ void loop() {
         // WAITING FOR PAIR
         digitalOutput(6,ON);
         digitalOutput(12,OFF);
-    }*/
+    }*/   
     // ADAPTED FROM https://create.arduino.cc/projecthub/mayooghgirish/arduino-bluetooth-basic-tutorial-d8b737
     //SerialSend("bluetooth works");
     if(available()) {
         char input = receiveData();
         transmitData(input);
         if(input == '1') {
-            digitalOutput(12,ON);
+            //digitalOutput(12,ON);
+            stepperMotorControl(5,1);
         } else if (input == '0') {
-            digitalOutput(12,OFF);
+            //digitalOutput(12,OFF);
             digitalOutput(13,OFF);
         } else if(input == '2') {
             digitalOutput(13,ON);
         }
     }
+
+    //
     
     //setupSteering();
     //motorDirection(1);
     //motorDirection(1);
-    //digitalOutput(6,1);
+    //digitalOutput(5,1);
     /*digitalOutput(4,ON);
     delay_ms(1000);
     digitalOutput(4,OFF);
     delay_ms(1000);*/
-    /*int button = digitalInput(2); // DIGITAL INPUT SEEMS TO BE GOOD ENOUGH WITHOUT THE DEBOUNCER
+    /*int button = digitalInput(8); // DIGITAL INPUT SEEMS TO BE GOOD ENOUGH WITHOUT THE DEBOUNCER
     if(button) {
         digitalOutput(13,OFF);
         engineSpeed = 1000;
