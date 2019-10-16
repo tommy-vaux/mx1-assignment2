@@ -55,19 +55,6 @@ void loop() {
     //digitalOutput(4,digitalInput(2));
     int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
     
-    // IF HAVE TIME; FIX THIS. but it's not necessary as led flash on actual bluetooth module indicates state.
-    /*int bluetoothState = digitalRead(7);
-    if(bluetoothState == 0) {
-        // CONNECTED
-        digitalOutput(6,OFF);
-        digitalOutput(12,ON);
-    } else {
-        // WAITING FOR PAIR
-        digitalOutput(6,ON);
-        digitalOutput(12,OFF);
-    }*/   
-    // ADAPTED FROM https://create.arduino.cc/projecthub/mayooghgirish/arduino-bluetooth-basic-tutorial-d8b737
-    //SerialSend("bluetooth works");
     if(available()) {
         char test[] = "test";
         char input = receiveData();
@@ -75,56 +62,32 @@ void loop() {
         if(input == 'l') {
             //digitalOutput(12,ON);
             stepperMotorControl(5,1);
-            SerialSend("Turning Left");
+            //SerialSend("Turning Left");
             //snprintf(test,sizeof(test),"Test %d",tt);
         } else if (input == 'r') {
             //digitalOutput(12,OFF);
             stepperMotorControl(5,0);
-            SerialSend("Turning Right");
+            //SerialSend("Turning Right");
         } else if(input == 'f') {
             motorDirection(1);
-            SerialSend("Moving Forwards");
+           // SerialSend("Moving Forwards");
         } else if(input == 'b') {
            motorDirection(0);
-           SerialSend("Moving Backwards");
+          // SerialSend("Moving Backwards");
         } else if(input > 47 && input <= 79) {
             // between '0' and 'O', 32 different bits for different speeds
             char output[12];
-            currentEngineSpeed = (input - 47) * 31;
+            currentEngineSpeed = (input - 47) * 32;
             //sprintf(output, sizeof(output), "Motor Speed %d", currentEngineSpeed);
         }
     }
 
-    //
-    
-    //setupSteering();
     //motorDirection(1);
+    //c(5,1);
     //motorDirection(1);
+    //analogueOutput(5,1020);
     //digitalOutput(5,1);
-    /*digitalOutput(4,ON);
-    delay_ms(1000);
-    digitalOutput(4,OFF);
-    delay_ms(1000);*/
-    /*int button = digitalInput(8); // DIGITAL INPUT SEEMS TO BE GOOD ENOUGH WITHOUT THE DEBOUNCER
-    if(button) {
-        digitalOutput(13,OFF);
-        engineSpeed = 1000;
-
-    } else {
-        digitalOutput(13,ON);
-        engineSpeed = 0;
-    }*/
-    
-    /*if(debouncedInput(2)) {
-        engineSpeed = 900;
-    } else {
-        engineSpeed = 0;
-    }*/
-    
-    
-    /*char test[128];
-    snprintf(test,sizeof(test),"The Counter Value is %lu \n",getTimerValue(0));
-    SerialSend(test);*/
+    //currentEngineSpeed = 1000;
 
     // THIS MUST RUN AT THE END OF ALL CODE
     if(engineSpeed != currentEngineSpeed){
