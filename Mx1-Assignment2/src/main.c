@@ -35,7 +35,7 @@ int main(void) {
 // runs at startup once
 void setup() {
     setupTimers();
-
+    setupPin(3,INPUT);
     setupPin(4,OUTPUT);
     setupPin(5,OUTPUT);
     setupPin(6,OUTPUT);
@@ -100,6 +100,15 @@ void loop() {
         }
     }
 
+    int obstacle = digitalInput(3); // get obstacle threshold from FPGA.
+    
+    if(obstacle) {
+        SerialSend("Obstacle Detected! Disabling DC Motors");
+        digitalOutput(6,OFF);
+        digitalOutput(7,OFF);
+        digitalOutput(5,OFF);
+    }
+
     //motorDirection(1);
     //c(5,1);
     //motorDirection(1);
@@ -108,7 +117,8 @@ void loop() {
     //currentEngineSpeed = 1000;
     //motorDirection(1);
     //digitalOutput(5,1);
-    bitBangPWM(5, engineSpeed);
+    digitalOutput(5,ON);
+    //bitBangPWM(5, engineSpeed);
     // THIS MUST RUN AT THE END OF ALL CODE
     if(engineSpeed != currentEngineSpeed){
         char test[128];
