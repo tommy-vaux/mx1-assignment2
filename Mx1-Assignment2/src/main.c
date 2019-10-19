@@ -27,7 +27,7 @@ int readyToUse = FALSE;
 int main(void) {
     setup();
     while(1) {
-        loop();
+        //loop();
     }
     return 0;
 }
@@ -39,6 +39,7 @@ void setup() {
     setupPin(4,OUTPUT);
     setupPin(5,OUTPUT);
     setupPin(6,OUTPUT);
+    setupPin(7,OUTPUT);
     setupPin(2,INPUT);
     setupPin(12,OUTPUT);
     setupPin(13,OUTPUT);
@@ -47,7 +48,7 @@ void setup() {
 
     // the engines need a voltage kick to get going
     // UNFORTUNATELY THIS PWM *STILL* DOESN'T PLAY NICE WITH THE STEPPER MOTOR. looks like I'm gonna have to do the stepper motor in pwm too.
-    analogueOutput(5,1000);
+    //analogueOutput(5,1000);
 }
 
 // runs indefinitely
@@ -69,16 +70,33 @@ void loop() {
             stepperMotorControl(5,0);
             //SerialSend("Turning Right");
         } else if(input == 'f') {
-            motorDirection(1);
+            //motorDirection(1);
+            digitalOutput(7,OFF);
+            digitalOutput(6,ON);
            // SerialSend("Moving Forwards");
         } else if(input == 'b') {
-           motorDirection(0);
+           //motorDirection(0);
+           digitalOutput(6,OFF);
+           digitalOutput(7,ON);
           // SerialSend("Moving Backwards");
-        } else if(input > 47 && input <= 79) {
-            // between '0' and 'O', 32 different bits for different speeds
+        /*} else if(input == '0') {
             char output[12];
-            currentEngineSpeed = (input - 47) * 32;
-            //sprintf(output, sizeof(output), "Motor Speed %d", currentEngineSpeed);
+            engineSpeed = (input - 47) * 32;
+            //sprintf(output, sizeof(output), "Motor Speed %d", engineSpeed);
+            SerialSend(output);
+
+        } else if(input == '1'){
+            char output[12];
+            engineSpeed = (input - 47) * 32;
+            //SerialSend("Engine ON");
+            sprintf(output, sizeof(output), "Motor Speed %d", engineSpeed);
+            SerialSend(output);*/
+        } else if(input > 47 && input <= 57) {
+            // between '0' and '9', 10 different bits for different speeds
+            char output[32];
+            engineSpeed = (input - 48) * 114;
+            snprintf(output, sizeof(output), "Motor Speed %d \n", engineSpeed);
+            SerialSend(output);
         }
     }
 
@@ -88,10 +106,16 @@ void loop() {
     //analogueOutput(5,1020);
     //digitalOutput(5,1);
     //currentEngineSpeed = 1000;
-
+    //motorDirection(1);
+    //digitalOutput(5,1);
+    bitBangPWM(5, engineSpeed);
     // THIS MUST RUN AT THE END OF ALL CODE
     if(engineSpeed != currentEngineSpeed){
-        analogueOutput(5, engineSpeed);
+        char test[128];
+        
+        //SerialSend("Engine Settings being applied now.");
+        //snprintf(test,sizeof(test),"engine speed: %d",engineSpeed);
+        //analogueOutput(5, engineSpeed);
         currentEngineSpeed = engineSpeed;
     }
 }
