@@ -27,7 +27,7 @@ int readyToUse = FALSE;
 int main(void) {
     setup();
     while(1) {
-        //loop();
+        loop();
     }
     return 0;
 }
@@ -55,7 +55,7 @@ void setup() {
 void loop() {
     //digitalOutput(4,digitalInput(2));
     int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
-    
+    //digitalOutput(13,ON);
     if(available()) {
         char test[] = "test";
         char input = receiveData();
@@ -79,18 +79,7 @@ void loop() {
            digitalOutput(6,OFF);
            digitalOutput(7,ON);
           // SerialSend("Moving Backwards");
-        /*} else if(input == '0') {
-            char output[12];
-            engineSpeed = (input - 47) * 32;
-            //sprintf(output, sizeof(output), "Motor Speed %d", engineSpeed);
-            SerialSend(output);
 
-        } else if(input == '1'){
-            char output[12];
-            engineSpeed = (input - 47) * 32;
-            //SerialSend("Engine ON");
-            sprintf(output, sizeof(output), "Motor Speed %d", engineSpeed);
-            SerialSend(output);*/
         } else if(input > 47 && input <= 57) {
             // between '0' and '9', 10 different bits for different speeds
             char output[32];
@@ -102,12 +91,16 @@ void loop() {
 
     int obstacle = digitalInput(3); // get obstacle threshold from FPGA.
     
-    if(obstacle) {
+    // MOTOR CONTROL (bitbang)
+    //bitBangPWM(5,1);
+    digitalOutput(5,1);
+
+    /*if(obstacle) {
         SerialSend("Obstacle Detected! Disabling DC Motors");
         digitalOutput(6,OFF);
         digitalOutput(7,OFF);
         digitalOutput(5,OFF);
-    }
+    }*/
 
     //motorDirection(1);
     //c(5,1);
@@ -117,15 +110,16 @@ void loop() {
     //currentEngineSpeed = 1000;
     //motorDirection(1);
     //digitalOutput(5,1);
-    digitalOutput(5,ON);
+    //digitalOutput(5,ON);
     //bitBangPWM(5, engineSpeed);
     // THIS MUST RUN AT THE END OF ALL CODE
     if(engineSpeed != currentEngineSpeed){
         char test[128];
         
         //SerialSend("Engine Settings being applied now.");
-        //snprintf(test,sizeof(test),"engine speed: %d",engineSpeed);
-        //analogueOutput(5, engineSpeed);
+        snprintf(test,sizeof(test),"engine speed: %d",engineSpeed);
+        SerialSend(test);
+        analogueOutput(5, engineSpeed);
         currentEngineSpeed = engineSpeed;
     }
 }
