@@ -11,26 +11,45 @@ void bitBangPWM(int pin, int input) {
     delay_us(1000 - input);
 
 }
+// COPIED FROM https://www.electroschematics.com/avr-pwm/. 
+// The only thing I don't get is how to move the output to a different pin.
+void setupEngines() {
+     DDRB |= (1 << DDB1);
+   // PB1 as output (we want engines to be off by default)
+   OCR1A = 0;
+   // set PWM for 50% duty cycle at 10bit
+   TCCR1A |= (1 << COM1A1);
+   // set non-inverting mode
+   TCCR1A |= (1 << WGM11) | (1 << WGM10);
+   // set 10bit phase corrected PWM Mode
+   TCCR1B |= (1 << CS11);
+   // set prescaler to 8 and starts PWM
+}
+
+void setEngineSpeed(int speed) {
+    // speed is from 0 to 9
+    OCR1A = speed * 113;
+}
 
 void stepperMotorControl(int delay, int direction) {
 
     if(direction) {
-        PORTB = 0b00000001;
+        PORTC = 0b00000001;
         delay_ms(delay);
-        PORTB = 0b00000010;
+        PORTC = 0b00000010;
         delay_ms(delay);
-        PORTB = 0b00000100;
+        PORTC = 0b00000100;
         delay_ms(delay);
-        PORTB = 0b00001000;
+        PORTC = 0b00001000;
         delay_ms(delay);
     } else {
-        PORTB = 0b00001000;
+        PORTC = 0b00001000;
         delay_ms(delay);
-        PORTB = 0b00000100;
+        PORTC = 0b00000100;
         delay_ms(delay);
-        PORTB = 0b00000010;
+        PORTC = 0b00000010;
         delay_ms(delay);
-        PORTB = 0b00000001;
+        PORTC = 0b00000001;
         delay_ms(delay);
     }
     

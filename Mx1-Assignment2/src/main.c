@@ -23,28 +23,36 @@ int steps = 0;
 int stepGoal = 0;
 int steeringInitialised = FALSE;
 int readyToUse = FALSE;
+int obstacleDetectionActive = FALSE;
 
-int main(void) {
+int main(void)
+{
     setup();
-    while(1) {
+    while(1){
         loop();
+        //stepperMotorControl(2,1);
+        //PORTC = 0b00001111;
     }
-    return 0;
 }
 
 // runs at startup once
 void setup() {
     setupTimers();
     setupPin(3,INPUT);
-    setupPin(4,OUTPUT);
+    DDRC = 0b00001111;
+    /*setupPin(4,OUTPUT);
     setupPin(5,OUTPUT);
     setupPin(6,OUTPUT);
-    setupPin(7,OUTPUT);
+    setupPin(7,OUTPUT);*/
+    setupPin(8,OUTPUT);
+    setupPin(10,OUTPUT);
     setupPin(2,INPUT);
     setupPin(12,OUTPUT);
     setupPin(13,OUTPUT);
 
     SerialBegin(9600);
+
+    setupEngines();
 
     // the engines need a voltage kick to get going
     // UNFORTUNATELY THIS PWM *STILL* DOESN'T PLAY NICE WITH THE STEPPER MOTOR. looks like I'm gonna have to do the stepper motor in pwm too.
@@ -54,7 +62,7 @@ void setup() {
 // runs indefinitely
 void loop() {
     //digitalOutput(4,digitalInput(2));
-    int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
+    //int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
     //digitalOutput(13,ON);
     if(available()) {
         char test[] = "test";
@@ -62,65 +70,48 @@ void loop() {
         transmitData(input);
         if(input == 'l') {
             //digitalOutput(12,ON);
-            stepperMotorControl(5,1);
+            stepperMotorControl(3,1);
             //SerialSend("Turning Left");
             //snprintf(test,sizeof(test),"Test %d",tt);
         } else if (input == 'r') {
             //digitalOutput(12,OFF);
-            stepperMotorControl(5,0);
+            stepperMotorControl(3,0);
             //SerialSend("Turning Right");
         } else if(input == 'f') {
-            //motorDirection(1);
-            digitalOutput(7,OFF);
-            digitalOutput(6,ON);
+            digitalOutput(10,OFF);
+           digitalOutput(8,ON);
            // SerialSend("Moving Forwards");
         } else if(input == 'b') {
-           //motorDirection(0);
-           digitalOutput(6,OFF);
-           digitalOutput(7,ON);
           // SerialSend("Moving Backwards");
+          digitalOutput(8,OFF);
+          digitalOutput(10,ON);
 
         } else if(input > 47 && input <= 57) {
             // between '0' and '9', 10 different bits for different speeds
-            char output[32];
+            /*char output[32];
             engineSpeed = (input - 48) * 114;
-            snprintf(output, sizeof(output), "Motor Speed %d \n", engineSpeed);
-            SerialSend(output);
+            snprintf(output, sizeof(output), "Motor Speed %d \n", engineSpeed);*/
+            int number = input - 48;
+            setEngineSpeed(number);
+            //SerialSend(output);
+        } else if(input == 'X') {
+            obstacleDetectionActive = TRUE;
+            SerialSend("Obstacle Detection Activated.");
+        } else if(input == 'x') {
+            obstacleDetectionActive = FALSE;
+            SerialSend("Obstacle Detection Disabled.");
+        }
+
+        if(obstacleDetectionActive) {
+        int obstacle = digitalInput(3); // get obstacle threshold from FPGA.
+        if(obstacle) {
+            SerialSend("Obstacle Detected! Stopping car");
+            // enabling BOTH stopping mechanisms. Disabling transistor & h bridge.
+            engineSpeed = 0;
+            digitalOutput(10,OFF);
+            digitalOutput(8,OFF);
         }
     }
-
-    int obstacle = digitalInput(3); // get obstacle threshold from FPGA.
-    
-    // MOTOR CONTROL (bitbang)
-    //bitBangPWM(5,1);
-    digitalOutput(5,1);
-
-    /*if(obstacle) {
-        SerialSend("Obstacle Detected! Disabling DC Motors");
-        digitalOutput(6,OFF);
-        digitalOutput(7,OFF);
-        digitalOutput(5,OFF);
-    }*/
-
-    //motorDirection(1);
-    //c(5,1);
-    //motorDirection(1);
-    //analogueOutput(5,1020);
-    //digitalOutput(5,1);
-    //currentEngineSpeed = 1000;
-    //motorDirection(1);
-    //digitalOutput(5,1);
-    //digitalOutput(5,ON);
-    //bitBangPWM(5, engineSpeed);
-    // THIS MUST RUN AT THE END OF ALL CODE
-    if(engineSpeed != currentEngineSpeed){
-        char test[128];
-        
-        //SerialSend("Engine Settings being applied now.");
-        snprintf(test,sizeof(test),"engine speed: %d",engineSpeed);
-        SerialSend(test);
-        analogueOutput(5, engineSpeed);
-        currentEngineSpeed = engineSpeed;
     }
 }
 

@@ -183,14 +183,16 @@ int digitalInputInversed(int pinNo) {
 
 // based off code from https://www.electroschematics.com/avr-pwm/
 void analogueOutput(int pinNo, int value) {
-    // Setup output pin
     setupPin(pinNo, OUTPUT);
     // set duty cycle. As this is timer 1 and we will be using 10 bit, max range is 1024
     OCR1A = value;
-    //set to non-inverting mode, 10 bit phase corrected PWM mode
-    TCCR1A = 0b10000011;
-    //set prescaler to 8 and start PWM
-    TCCR1B = 0b00000010;
+    // set non-inverting mode
+    TCCR1A |= (1 << COM1A1);
+    // set 10bit phase corrected PWM Mode
+    TCCR1A |= (1 << WGM11) | (1 << WGM10);
+    // set prescaler to 8 and starts PWM
+    TCCR1B |= (1 << CS11);
+   
 
 }
 
