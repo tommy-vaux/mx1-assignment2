@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "basicFunctions.h"
 
 // CONTROL FUNCTIONS TO CONTROL MOTORS, ETC.
@@ -64,3 +65,15 @@ void motorDirection(int direction) {
         digitalOutput(7,ON);
     }
 }
+// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
+/*void setupObstacleDetection() {
+    setupPin(3,INPUT);
+    PORTD |= (1 << PORTD3); // turn on pull-up resistor
+
+    // Set it to trigger on rising edge
+    EICRA |= (1 << ISC11);
+    // turn on the interrupt
+    EIMSK |= (1<< INT0);
+
+    sei();
+}*/

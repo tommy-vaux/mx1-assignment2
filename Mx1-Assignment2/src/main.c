@@ -64,18 +64,31 @@ void loop() {
     //digitalOutput(4,digitalInput(2));
     //int currentEngineSpeed = engineSpeed; // DO NOT CHANGE; CHANGE GLOBAL VAR
     //digitalOutput(13,ON);
+    int obstacle = digitalInput(3); // get obstacle threshold from FPGA.
+
+    if(obstacleDetectionActive) {
+        if(!obstacle) {
+            SerialSend("Obstacle Detected! Stopping car");
+            // enabling BOTH stopping mechanisms. Disabling transistor & h bridge.
+            engineSpeed = 0;
+            digitalOutput(10,OFF);
+            digitalOutput(8,OFF);
+            digitalOutput(9,OFF);
+        }
+    }
+
     if(available()) {
         char test[] = "test";
         char input = receiveData();
         transmitData(input);
         if(input == 'l') {
             //digitalOutput(12,ON);
-            stepperMotorControl(3,1);
+            stepperMotorControl(3,0);
             //SerialSend("Turning Left");
             //snprintf(test,sizeof(test),"Test %d",tt);
         } else if (input == 'r') {
             //digitalOutput(12,OFF);
-            stepperMotorControl(3,0);
+            stepperMotorControl(3,1);
             //SerialSend("Turning Right");
         } else if(input == 'f') {
             digitalOutput(10,OFF);
@@ -103,15 +116,15 @@ void loop() {
         }
 
         if(obstacleDetectionActive) {
-        int obstacle = digitalInput(3); // get obstacle threshold from FPGA.
-        if(obstacle) {
+            if(!obstacle) {
             SerialSend("Obstacle Detected! Stopping car");
             // enabling BOTH stopping mechanisms. Disabling transistor & h bridge.
             engineSpeed = 0;
             digitalOutput(10,OFF);
             digitalOutput(8,OFF);
+            digitalOutput(9,OFF);
+            }   
         }
-    }
     }
 }
 
