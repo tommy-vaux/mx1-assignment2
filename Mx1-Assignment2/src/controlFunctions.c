@@ -12,8 +12,7 @@ void bitBangPWM(int pin, int input) {
     delay_us(1000 - input);
 
 }
-// COPIED FROM https://www.electroschematics.com/avr-pwm/. 
-// The only thing I don't get is how to move the output to a different pin.
+// BASED ON CODE FROM https://www.electroschematics.com/avr-pwm/. 
 void setupEngines() {
      DDRB |= (1 << DDB1);
    // PB1 as output (we want engines to be off by default)
